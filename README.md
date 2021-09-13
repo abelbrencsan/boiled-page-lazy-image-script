@@ -1,6 +1,6 @@
 # Boiled Page lazy images script
 
-A super simple, observer-based JavaScript module for Boiled Page frontend framework to load images when they come into the viewport.
+A super simple, observer-based JavaScript module for Boiled Page frontend framework to load images (or videos) when they come into the viewport.
 
 ## Install
 

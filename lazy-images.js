@@ -1,5 +1,5 @@
 /**
- * Lazy images - v1.1.0
+ * Lazy images - v1.1.1
  * Copyright 2021 Abel Brencsan
  * Released under the MIT License
  */
@@ -87,9 +87,16 @@ var LazyImages = (function(){
 		else {
 			source.setAttribute('src', source.getAttribute(options.sourceAttribute));
 			source.classList.add(options.isLoadingClass);
-			source.addEventListener('load', function(event) {
-				event.target.classList.add(options.isLoadedClass);
-			});
+			if (source.tagName == 'VIDEO') {
+				source.addEventListener('canplaythrough', function(event) {
+					event.target.classList.add(options.isLoadedClass);
+				});
+			}
+			else {
+				source.addEventListener('load', function(event) {
+					event.target.classList.add(options.isLoadedClass);
+				});
+			}
 		}
 		source.removeAttribute(options.sourceAttribute);
 	};
