@@ -21,6 +21,7 @@ var LazyImages = (function(){
 	* Initialize observer for lazy images. (public)
 	*/
 	var init = function(givenOptions) {
+		var observerOptions;
 		if (typeof givenOptions !== 'object') throw 'Lazy images options must be an object';
 		if (typeof givenOptions.sourceAttribute !== 'string') throw 'Lazy images "sourceAttribute" option must be a string';
 		for (var key in options) {
@@ -30,7 +31,10 @@ var LazyImages = (function(){
 		}
 		if ('IntersectionObserver' in window) {
 			isObserverSupported = true;
-			observer = new IntersectionObserver(lazyLoad, options);
+			observerOptions = {
+				threshold: options['threshold']
+			};
+			observer = new IntersectionObserver(lazyLoad, observerOptions);
 		}
 	};
 
