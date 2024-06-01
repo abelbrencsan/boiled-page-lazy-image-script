@@ -1,16 +1,15 @@
 /**
- * Lazy images - v1.1.1
- * Copyright 2021 Abel Brencsan
+ * Lazy images
+ * Copyright 2024 Abel Brencsan
  * Released under the MIT License
  */
-
-var LazyImages = (function(){
+const LazyImages = (function(){
 
 	'use strict';
 
-	var observer;
-	var isObserverSupported = false;
-	var options = {
+	let observer;
+	let isObserverSupported = false;
+	let defaults = {
 		sourceAttribute: null,
 		threshold: 0,
 		isLoadingClass: 'is-loading',
@@ -18,62 +17,77 @@ var LazyImages = (function(){
 	};
 
 	/**
-	* Initialize observer for lazy images. (public)
+	* Initialize observer for lazy images.
+	* 
+	* @param {object} options
+	* @public
 	*/
-	var init = function(givenOptions) {
-		var observerOptions;
-		if (typeof givenOptions !== 'object') throw 'Lazy images options must be an object';
-		if (typeof givenOptions.sourceAttribute !== 'string') throw 'Lazy images "sourceAttribute" option must be a string';
-		for (var key in options) {
-			if (givenOptions.hasOwnProperty(key)) {
-				options[key] = givenOptions[key];
+	let init = function(options) {
+		if (typeof options !== 'object') {
+			throw 'Lazy images "options" must be an object';
+		}
+		if (typeof options.sourceAttribute !== 'string') {
+			throw 'Lazy images "sourceAttribute" must be a string';
+		}
+		for (let key in defaults) {
+			if (options.hasOwnProperty(key)) {
+				defaults[key] = options[key];
 			}
 		}
 		if ('IntersectionObserver' in window) {
 			isObserverSupported = true;
-			observerOptions = {
-				threshold: options['threshold']
+			let observerOptions = {
+				threshold: defaults['threshold']
 			};
 			observer = new IntersectionObserver(lazyLoad, observerOptions);
 		}
 	};
 
 	/**
-	* Add new image to observer. (public)
+	* Add new image to observer.
+	* 
+	* @param {HTMLElement} wrapper
+	* @public
 	*/
-	var add = function(wrapper) {
-		var sources;
+	let add = function(wrapper) {
+		let sources;
 		if (isObserverSupported) {
 			observer.observe(wrapper);
 		}
 		else {
-			sources = wrapper.querySelectorAll('[' + options.sourceAttribute + ']');
-			for (var i = 0; i < sources.length; i++) {
+			sources = wrapper.querySelectorAll('[' + defaults.sourceAttribute + ']');
+			for (let i = 0; i < sources.length; i++) {
 				changeSource(sources[i]);
 			}
 		}
 	};
 
 	/**
-	* Remove image from observer. (public)
+	* Remove image from observer.
+	* 
+	* @param {HTMLElement} wrapper
+	* @public
 	*/
-	var remove = function(wrapper) {
+	let remove = function(wrapper) {
 		if (isObserverSupported) {
 			observer.unobserve(wrapper);
 		}
 	};
 
 	/**
-	* Load images which enter the document viewport. (private)
+	* Load images which enter the document viewport.
+	* 
+	* @param {array[IntersectionObserverEntry]} entries
+	* @private
 	*/
-	var lazyLoad = function(entries) {
-		var sources;
+	let lazyLoad = function(entries) {
+		let sources;
 		if (navigator.onLine) {
-			for (var i = 0; i < entries.length; i++) {
-				if (entries[i].intersectionRatio >= options.threshold && entries[i].intersectionRatio > 0) {
+			for (let i = 0; i < entries.length; i++) {
+				if (entries[i].intersectionRatio >= defaults.threshold && entries[i].intersectionRatio > 0) {
 					remove(entries[i].target);
-					sources = entries[i].target.querySelectorAll('[' + options.sourceAttribute + ']');
-					for (var j = 0; j < sources.length; j++) {
+					sources = entries[i].target.querySelectorAll('[' + defaults.sourceAttribute + ']');
+					for (let j = 0; j < sources.length; j++) {
 						changeSource(sources[j]);
 					}
 				}
@@ -82,27 +96,30 @@ var LazyImages = (function(){
 	};
 
 	/**
-	* Change image source with the value given in the source attribute. (private)
+	* Change image source with the value given in the source attribute.
+	* 
+	* @param {HTMLElement} source
+	* @private
 	*/
-	var changeSource = function(source) {
+	let changeSource = function(source) {
 		if (source.hasAttribute('srcset')) {
-			source.setAttribute('srcset', source.getAttribute(options.sourceAttribute));
+			source.setAttribute('srcset', source.getAttribute(defaults.sourceAttribute));
 		}
 		else {
-			source.setAttribute('src', source.getAttribute(options.sourceAttribute));
-			source.classList.add(options.isLoadingClass);
+			source.setAttribute('src', source.getAttribute(defaults.sourceAttribute));
+			source.classList.add(defaults.isLoadingClass);
 			if (source.tagName == 'VIDEO') {
 				source.addEventListener('canplaythrough', function(event) {
-					event.target.classList.add(options.isLoadedClass);
+					event.target.classList.add(defaults.isLoadedClass);
 				});
 			}
 			else {
 				source.addEventListener('load', function(event) {
-					event.target.classList.add(options.isLoadedClass);
+					event.target.classList.add(defaults.isLoadedClass);
 				});
 			}
 		}
-		source.removeAttribute(options.sourceAttribute);
+		source.removeAttribute(defaults.sourceAttribute);
 	};
 
 	return {
@@ -110,5 +127,4 @@ var LazyImages = (function(){
 		add: add,
 		remove: remove
 	};
-
 })();
