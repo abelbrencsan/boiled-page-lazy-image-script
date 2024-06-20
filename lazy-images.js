@@ -77,7 +77,7 @@ const LazyImages = (function(){
 	/**
 	* Load images which enter the document viewport.
 	* 
-	* @param {array[IntersectionObserverEntry]} entries
+	* @param {IntersectionObserverEntry[]} entries
 	* @private
 	*/
 	let lazyLoad = function(entries) {
@@ -109,7 +109,7 @@ const LazyImages = (function(){
 			source.setAttribute('src', source.getAttribute(defaults.sourceAttribute));
 			source.classList.add(defaults.isLoadingClass);
 			if (source.tagName == 'VIDEO') {
-				source.addEventListener('canplaythrough', function(event) {
+				source.addEventListener('loadedmetadata', function(event) {
 					event.target.classList.add(defaults.isLoadedClass);
 				});
 			}
